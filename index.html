@@ -76,6 +76,10 @@
         document.getElementById('totalAssurance').innerHTML = assuranceCumulee.toLocaleString() + ' €';
         document.getElementById('nbDeMensualites').innerHTML = N;
         document.getElementById('montantMensualite').innerHTML = (M+assurance).toLocaleString() + ' €';
+        document.getElementById('montantMensualitePendantPtz').innerHTML = (M+assurance+PTZ_M).toLocaleString() + ' €';
+
+        document.getElementById('mensuPTZ').innerHTML = (PTZ_M).toLocaleString() + ' €';
+
 
 
         chart.draw(data, options);
