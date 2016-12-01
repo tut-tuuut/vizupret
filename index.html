@@ -28,8 +28,17 @@
         var options = {
           title: 'Simulateur sur '+N+' mois - mensualité de '+M.toLocaleString()+' € + '+ assurance+' € d’assurance',
           vAxis: {title: 'Mensualité'},
-          //seriesType: 'bars'
-          series: {3: {type: 'line'}},
+          series: {
+            3: {
+              type: 'line',
+              targetAxisIndex: 1
+            }
+          },
+          axes: {
+            1: {
+              title:'Capital dû'
+            }
+          },
           isStacked: true
         };
 
