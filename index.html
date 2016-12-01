@@ -7,15 +7,25 @@
       google.charts.setOnLoadCallback(drawChart);
       function drawChart() {
 
-        var C = document.getElementById('capital').value;
-        var T = document.getElementById('taux').value/100;
-        var N = document.getElementById('duree').value*12;
+        var C = document.getElementById('capital').value * 1; // capital
+        var T = document.getElementById('taux').value/100; // taux
+        var N = document.getElementById('duree').value*12; // nombre de mensualités
 
-        var assurance = parseInt(document.getElementById('assurance').value);
+        var assurance = parseInt(document.getElementById('assurance').value); // assurance mensuelle
 
-        var M = (C*T/12)/(1-Math.pow((1+T/12), -N));
-        var mydata = [['Mois', 'Amortissement', 'Intérêts', 'Assurance', 'Capital dû', "Intérêts cumulés"]];
-        var interets, capital, amortissement;
+        var M = (C*T/12)/(1-Math.pow((1+T/12), -N)); // mensualité du prêt principal
+
+        var PTZ_C = document.getElementById('ptzMontant').value * 1; // montant du PTZ
+        var PTZ_N = document.getElementById('ptzDuree').value * 12; // nb mensualités du ptz
+        var PTZ_O = document.getElementById('ptzCarence').value * 12; // offset du ptz
+        var PTZ_end = PTZ_N + PTZ_O;
+        var PTZ_M = PTZ_C / PTZ_N; // au moins, ça c'est facile à calculer. Mensu du PTZ
+
+        var mydata = [["Mois", 'Capital dû', "Intérêts cumulés", 'Amortissement', 'Intérêts', 'Assurance', 'PTZ']];
+        if (PTZ_C == 0) {
+          mydata[0].pop(); // unset "PTZ" key
+        }
+        var interets, capital, amortissement, row, ptz;
         capital = C;
         var interetsCumules = 0.00;
         for (var i=0; i < N; i++) {
@@ -23,17 +33,26 @@
           interetsCumules += interets;
           amortissement = M - interets;
           capital -= amortissement;
-          mydata.push([i, amortissement, interets, assurance, capital, interetsCumules]);
+          ptz = 0;
+          if (PTZ_C > 0 && i >= PTZ_O && i < PTZ_end) {
+            ptz = PTZ_M;
+          }
+
+          row = [i, capital, interetsCumules, amortissement, interets, assurance, ptz ];
+          if (PTZ_C == 0) {
+            row.pop(); // unset PTZ key
+          }
+          mydata.push(row);
         }
         var data = google.visualization.arrayToDataTable(mydata);
 
         var options = {
           series: {
-            3: {
+            0: {
               type: 'line',
               targetAxisIndex: 1
             },
-            4: {
+            1: {
               type: 'line',
               targetAxisIndex: 1
             }
@@ -53,7 +72,7 @@
         document.getElementById('totalInterets').innerHTML = interetsCumules.toLocaleString() + ' €';
         document.getElementById('totalAssurance').innerHTML = assuranceCumulee.toLocaleString() + ' €';
         document.getElementById('nbDeMensualites').innerHTML = N;
-        document.getElementById('montantMensualite').innerHTML = M.toLocaleString() + ' €';
+        document.getElementById('montantMensualite').innerHTML = (M+assurance).toLocaleString() + ' €';
 
 
         chart.draw(data, options);
@@ -77,7 +96,7 @@
         width: 5em;
         text-align: right;
       }
-      #capital {
+      .gros { /* GROS MONTANT ! $OU$ !!! */
         width: 9em;
       }
       button {
@@ -97,8 +116,9 @@
   <body>
     <h1>Visualisateur d'échéancier de prêt</h1>
     <div>
-      <p>J'emprunte <input id="capital" type="number"> € au taux de <input id="taux" type="text"> % sur <input id="duree" type="number"> ans.</p>
+      <p>J'emprunte <input id="capital" class="gros" type="number"> € au taux de <input id="taux" type="text"> % sur <input id="duree" type="number"> ans.</p>
       <p>Je prévois <input type="number" id="assurance"> € d'assurance par mois.</p>
+      <p>J'ai aussi un PTZ d'un montant de <input type="text" class="gros" id="ptzMontant"> € à rembourser en <input type="text" id="ptzDuree"> années après une carence de <input type="text" id="ptzCarence"> ans.</p>
       <p><button onClick="drawChart()">Calculer</button></p>
     </div>
     <div class="results">
