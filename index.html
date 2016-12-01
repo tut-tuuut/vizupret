@@ -12,23 +12,24 @@
         var N = document.getElementById('duree').value*12;
 
         var assurance = parseInt(document.getElementById('assurance').value); // 30€ par mois pour l'assurance
-        console.log(C,T,N,assurance);
 
         var M = (C*T/12)/(1-Math.pow((1+T/12), -N));
-        var mydata = [['Mois', 'Amortissement', 'Intérêts', 'Assurance']];
+        var mydata = [['Mois', 'Amortissement', 'Intérêts', 'Assurance', 'Capital dû']];
         var interets, capital, amortissement;
         capital = C;
-        for (var i=0; i <= N; i++) {
+        for (var i=0; i < N; i++) {
           interets = capital * T / 12; // intérêts mensuels
           amortissement = M - interets;
           capital -= amortissement;
-          mydata.push([i, amortissement, interets, assurance]);
+          mydata.push([i, amortissement, interets, assurance, capital]);
         }
         var data = google.visualization.arrayToDataTable(mydata);
 
         var options = {
           title: 'Simulateur sur '+N+' mois - mensualité de '+M.toLocaleString()+' € + '+ assurance+' € d’assurance',
-          vAxis: {title: 'Accumulated Rating'},
+          vAxis: {title: 'Mensualité'},
+          //seriesType: 'bars'
+          series: {3: {type: 'line'}},
           isStacked: true
         };
 
