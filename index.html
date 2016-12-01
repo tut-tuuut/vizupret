@@ -11,7 +11,7 @@
         var T = document.getElementById('taux').value/100; // taux
         var N = document.getElementById('duree').value*12; // nombre de mensualités
 
-        var assurance = parseInt(document.getElementById('assurance').value); // assurance mensuelle
+        var assurance = parseInt(document.getElementById('assurance').value) || 0; // assurance mensuelle
 
         var M = (C*T/12)/(1-Math.pow((1+T/12), -N)); // mensualité du prêt principal
 
