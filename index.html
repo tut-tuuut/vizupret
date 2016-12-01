@@ -7,11 +7,12 @@
       google.charts.setOnLoadCallback(drawChart);
       function drawChart() {
 
-        var C = 180000;
-        var T = 1.2/100;
-        var N = 20*12;
+        var C = document.getElementById('capital').value;
+        var T = document.getElementById('taux').value/100;
+        var N = document.getElementById('duree').value*12;
 
-        var assurance = 30; // 30€ par mois pour l'assurance
+        var assurance = parseInt(document.getElementById('assurance').value); // 30€ par mois pour l'assurance
+        console.log(C,T,N,assurance);
 
         var M = (C*T/12)/(1-Math.pow((1+T/12), -N));
         var mydata = [['Mois', 'Amortissement', 'Intérêts', 'Assurance']];
@@ -23,7 +24,6 @@
           capital -= amortissement;
           mydata.push([i, amortissement, interets, assurance]);
         }
-        console.log(mydata);
         var data = google.visualization.arrayToDataTable(mydata);
 
         var options = {
@@ -39,6 +39,11 @@
     </script>
   </head>
   <body>
+    <div>
+      <p>J'emprunte <input id="capital" type="number"> € au taux de <input id="taux" type="text"> % sur <input id="duree" type="number"> ans.</p>
+      <p>Je prévois <input type="number" id="assurance"> € d'assurance par mois.</p>
+      <p><button onClick="drawChart()">Calculer</button></p>
+    </div>
     <div id="chart_div" style="width: 900px; height: 500px;"></div>
   </body>
 </html>
