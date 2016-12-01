@@ -16,6 +16,9 @@
         var M = (C*T/12)/(1-Math.pow((1+T/12), -N)); // mensualité du prêt principal
 
         var PTZ_C = document.getElementById('ptzMontant').value * 1; // montant du PTZ
+        if (document.getElementById('enable_ptz').checked != true) {
+          PTZ_C = 0;
+        }
         var PTZ_N = document.getElementById('ptzDuree').value * 12; // nb mensualités du ptz
         var PTZ_O = document.getElementById('ptzCarence').value * 12; // offset du ptz
         var PTZ_end = PTZ_N + PTZ_O;
@@ -77,6 +80,11 @@
 
         chart.draw(data, options);
       }
+      function enablePtz() {
+        var checkbox = document.getElementById('enable_ptz');
+        console.log(checkbox.checked);
+        document.body.classList.toggle('with-ptz', checkbox.checked);
+      }
     </script>
     <style>
       body {
@@ -84,9 +92,8 @@
         margin: 1em;
       }
       h1 {
-        text-align: center;
         border-bottom: 3px double;
-        padding: .2em 0 .7em;
+        padding: .2em 0 .5em;
       }
       input {
         background: #fff;
@@ -111,20 +118,33 @@
       .result {
         font-weight: bold;
       }
+      .ptz {
+        display: none;
+      }
+      .with-ptz .ptz {
+        display: initial;
+      }
     </style>
   </head>
-  <body>
-    <h1>Visualisateur d'échéancier de prêt</h1>
+  <body class="no-ptz">
+    <h1>Visualisateur d'échéancier de prêt <span class="ptz">avec <abbr title="Prêt à Taux Zéro">PTZ</abbr></span></h1>
+    <div class="tooltip-right">
+      <input type="checkbox" id="enable_ptz" onChange="enablePtz();"><label for="enable_ptz">Simuler un prêt à taux zéro</label>
+    </div>
     <div>
       <p>J'emprunte <input id="capital" class="gros" type="number"> € au taux de <input id="taux" type="text"> % sur <input id="duree" type="number"> ans.</p>
       <p>Je prévois <input type="number" id="assurance"> € d'assurance par mois.</p>
-      <p>J'ai aussi un PTZ d'un montant de <input type="text" class="gros" id="ptzMontant"> € à rembourser en <input type="text" id="ptzDuree"> années après une carence de <input type="text" id="ptzCarence"> ans.</p>
+      <p class="ptz">J'ai aussi un <abbr title="Prêt à Taux Zéro">PTZ</abbr> d'un montant de <input type="text" class="gros" id="ptzMontant"> € à rembourser en <input type="text" id="ptzDuree"> ans après une carence de <input type="text" id="ptzCarence"> ans.</p>
       <p><button onClick="drawChart()">Calculer</button></p>
     </div>
     <div class="results">
-      <p><span class="result" id="nbDeMensualites"></span> mensualités de <span class="result" id="montantMensualite"></span>.</p>
+      <p><span class="result" id="nbDeMensualites"></span> mensualités de <span class="result" id="montantMensualite"></span></p>
+      <p class="ptz">Les mensualités du PTZ sont de <span class="result" id="mensuPTZ"></span> (donc les mensualités pendant le remboursement du PTZ seront de <span class="result" id="montantMensualitePendantPtz"></span>).</p>
       <p>Montant total du prêt : <span class="result" id="total"></span> dont <span class="result" id="totalInterets"></span> d'intérêts et <span class="result" id="totalAssurance"></span> d'assurance.</p>
     </div>
     <div id="chart_div" style="width: 900px; height: 500px;"></div>
+    <script>
+      enablePtz();
+    </script>
   </body>
 </html>
