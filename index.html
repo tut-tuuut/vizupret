@@ -29,10 +29,11 @@
           M = euros((C*t+PTZ_M*Math.pow(1+t, -PTZ_O)*(1-Math.pow(1+t,-PTZ_N)))/(1-Math.pow((1+t), -N)));
         }
 
-        var mydata = [["Mois", 'Capital dû', "Intérêts cumulés", 'Amortissement', 'Intérêts', 'Assurance', 'PTZ']];
-        if (PTZ_C == 0) {
-          mydata[0].pop(); // unset "PTZ" key
+        var mydata = [['Amortissement', 'Intérêts', 'Assurance']];
+        if (PTZ_C > 0) {
+          mydata[0].unshift('PTZ'); // unset "PTZ" key
         }
+        mydata[0].unshift('Mois');
         var interets, capital, amortissement, row, ptz;
         capital = C;
         var interetsCumules = 0.00;
@@ -48,31 +49,16 @@
           amortissement = M - interets - ptz;
           capital -= amortissement;
 
-          row = [i, capital, interetsCumules, amortissement, interets, assurance, ptz ];
-          if (PTZ_C == 0) {
-            row.pop(); // unset PTZ key
+          row = [amortissement, interets, assurance];
+          if (PTZ_C > 0) {
+            row.unshift(ptz); // set PTZ key
           }
+          row.unshift(i);
           mydata.push(row);
-          console.log(capital);
         }
         var data = google.visualization.arrayToDataTable(mydata);
 
         var options = {
-          series: {
-            0: {
-              type: 'line',
-              targetAxisIndex: 1
-            },
-            1: {
-              type: 'line',
-              targetAxisIndex: 1
-            }
-          },
-          axes: {
-            1: {
-              title:'Gros montants'
-            }
-          },
           isStacked: true
         };
 
