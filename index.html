@@ -30,12 +30,14 @@
         }
 
         var mydata = [['Amortissement', 'Intérêts', 'Assurance']];
+        var myOtherData = [['Mois', 'PTZ', 'Prêt principal', 'Intérêts cumulés']];
         if (PTZ_C > 0) {
           mydata[0].unshift('PTZ'); // unset "PTZ" key
         }
         mydata[0].unshift('Mois');
         var interets, capital, amortissement, row, ptz;
-        capital = C;
+        var capital = C;
+        var capitalPtz = PTZ_C;
         var interetsCumules = 0.00;
         for (var i=0; i < N; i++) {
           interets = euros(capital * t);
@@ -48,6 +50,7 @@
 
           amortissement = M - interets - ptz;
           capital -= amortissement;
+          capitalPtz -= ptz;
 
           row = [amortissement, interets, assurance];
           if (PTZ_C > 0) {
@@ -55,14 +58,24 @@
           }
           row.unshift(i);
           mydata.push(row);
+          myOtherData.push([i, capitalPtz, capital, interetsCumules]);
         }
         var data = google.visualization.arrayToDataTable(mydata);
+        var otherData = google.visualization.arrayToDataTable(myOtherData);
 
         var options = {
+          title: 'Composition des mensualités en fonction du temps',
           isStacked: true
         };
+        var otherOptions = {
+          title: 'Évolution du capital restant dû',
+          isStacked: true,
+          series: {2: {type: 'line'}}
+        }
 
         var chart = new google.visualization.AreaChart(document.getElementById('chart_div'));
+        var otherChart = new google.visualization.AreaChart(document.getElementById('other_chart_div'));
+
         var assuranceCumulee = assurance * N;
         var total = interetsCumules + assuranceCumulee;
         document.getElementById('total').innerHTML = total.toLocaleString() + ' €';
@@ -72,6 +85,7 @@
         document.getElementById('montantMensualite').innerHTML = (M+assurance).toLocaleString() + ' €';
 
         chart.draw(data, options);
+        otherChart.draw(otherData, otherOptions);
       }
       function enablePtz() {
         var checkbox = document.getElementById('enable_ptz');
@@ -138,6 +152,8 @@
       <p>Coût total du prêt : <span class="result" id="total"></span> dont <span class="result" id="totalInterets"></span> d'intérêts et <span class="result" id="totalAssurance"></span> d'assurance.</p>
     </div>
     <div id="chart_div" style="width: 900px; height: 500px;"></div>
+    <div id="other_chart_div" style="width: 900px; height: 500px;"></div>
+
     <script>
       enablePtz();
     </script>
