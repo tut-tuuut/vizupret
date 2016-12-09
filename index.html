@@ -13,7 +13,7 @@
 
         var assurance = parseInt(document.getElementById('assurance').value) || 0; // assurance mensuelle
         var t = T/12;
-        var M = (C*t)/(1-Math.pow((1+t), -N)); // mensualité du prêt principal
+        var M = euros((C*t)/(1-Math.pow((1+t), -N))); // mensualité du prêt principal
 
         var PTZ_C = document.getElementById('ptzMontant').value * 1; // montant du PTZ
         if (document.getElementById('enable_ptz').checked != true) {
@@ -22,11 +22,11 @@
         var PTZ_N = document.getElementById('ptzDuree').value * 12; // nb mensualités du ptz
         var PTZ_O = document.getElementById('ptzCarence').value * 12; // offset du ptz
         var PTZ_end = PTZ_N + PTZ_O;
-        var PTZ_M = PTZ_C / PTZ_N; // au moins, ça c'est facile à calculer. Mensu du PTZ
+        var PTZ_M = euros(PTZ_C / PTZ_N); // au moins, ça c'est facile à calculer. Mensu du PTZ
 
         if (PTZ_M > 0) {
           // calcul de la mensualité lissée
-          M = (C*t+PTZ_M*Math.pow(1+t, -PTZ_O)*(1-Math.pow(1+t,-PTZ_N)))/(1-Math.pow((1+t), -N));
+          M = euros((C*t+PTZ_M*Math.pow(1+t, -PTZ_O)*(1-Math.pow(1+t,-PTZ_N)))/(1-Math.pow((1+t), -N)));
         }
 
         var mydata = [["Mois", 'Capital dû', "Intérêts cumulés", 'Amortissement', 'Intérêts', 'Assurance', 'PTZ']];
@@ -37,7 +37,7 @@
         capital = C;
         var interetsCumules = 0.00;
         for (var i=0; i < N; i++) {
-          interets = capital * t;
+          interets = euros(capital * t);
           interetsCumules += interets;
 
           ptz = 0;
@@ -53,6 +53,7 @@
             row.pop(); // unset PTZ key
           }
           mydata.push(row);
+          console.log(capital);
         }
         var data = google.visualization.arrayToDataTable(mydata);
 
@@ -84,9 +85,6 @@
         document.getElementById('nbDeMensualites').innerHTML = N;
         document.getElementById('montantMensualite').innerHTML = (M+assurance).toLocaleString() + ' €';
 
-
-
-
         chart.draw(data, options);
       }
       function enablePtz() {
@@ -94,6 +92,9 @@
         console.log(checkbox.checked);
         document.body.classList.toggle('with-ptz', checkbox.checked);
       }
+      function euros(number) {
+        return Math.round(number*100)/100;
+      } 
     </script>
     <style>
       body {
