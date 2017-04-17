@@ -10,8 +10,7 @@
         var C = document.getElementById('capital').value * 1; // capital
         var T = document.getElementById('taux').value/100; // taux
         var N = document.getElementById('duree').value*12; // nombre de mensualités
-
-        var assurance = parseInt(document.getElementById('assurance').value) || 0; // assurance mensuelle
+        
         var t = T/12;
         var M = euros((C*t)/(1-Math.pow((1+t), -N))); // mensualité du prêt principal
 
@@ -27,6 +26,13 @@
         if (PTZ_M > 0) {
           // calcul de la mensualité lissée
           M = euros((C*t+PTZ_M*Math.pow(1+t, -PTZ_O)*(1-Math.pow(1+t,-PTZ_N)))/(1-Math.pow((1+t), -N)));
+        }
+
+        if (document.getElementById('calcul_assurance').value == 1) {
+          var assurance = ((C + PTZ_C) * 0.01 * (document.getElementById('assurance').value || 0))*100/(100*12); // assurance mensuelle payée par mois
+          console.log(assurance);
+        } else {
+          var assurance = parseInt(document.getElementById('assurance').value, 10) || 0;
         }
 
         var mydata = [['Amortissement', 'Intérêts', 'Assurance']];
@@ -143,7 +149,14 @@
     </div>
     <div>
       <p>J'emprunte <input id="capital" class="gros" type="number"> € au taux de <input id="taux" type="text"> % sur <input id="duree" type="number"> ans.</p>
-      <p>Je prévois <input type="number" id="assurance"> € d'assurance par mois.</p>
+      <p>
+        Assurance :
+        <input type="text" id="assurance">
+        <select name="calcul_assurance" id="calcul_assurance">
+          <option value="1">% du capital emprunté par an</option>
+          <option value="2">€ par mois</option>
+        </select>
+      </p>
       <p class="ptz">J'ai aussi un <abbr title="Prêt à Taux Zéro">PTZ</abbr> d'un montant de <input type="text" class="gros" id="ptzMontant"> € à rembourser en <input type="text" id="ptzDuree"> ans après une carence de <input type="text" id="ptzCarence"> ans.</p>
       <p><button onClick="drawChart()">Calculer</button></p>
     </div>
