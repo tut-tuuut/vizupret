@@ -6,21 +6,25 @@
     <script type="text/javascript">
       google.charts.load('current', {'packages':['corechart']});
       google.charts.setOnLoadCallback(drawChart);
+
+      function v(val) {
+        return val.replace(',', '.');
+      }
       function drawChart() {
 
-        var C = document.getElementById('capital').value * 1; // capital
-        var T = document.getElementById('taux').value/100; // taux
-        var N = document.getElementById('duree').value*12; // nombre de mensualités
+        var C = v(document.getElementById('capital').value)  * 1; // capital
+        var T = v(document.getElementById('taux').value) /100; // taux
+        var N = v(document.getElementById('duree').value) *12; // nombre de mensualités
         
         var t = T/12;
         var M = euros((C*t)/(1-Math.pow((1+t), -N))); // mensualité du prêt principal
 
-        var PTZ_C = document.getElementById('ptzMontant').value * 1; // montant du PTZ
+        var PTZ_C = v(document.getElementById('ptzMontant').value) * 1; // montant du PTZ
         if (document.getElementById('enable_ptz').checked != true) {
           PTZ_C = 0;
         }
-        var PTZ_N = document.getElementById('ptzDuree').value * 12; // nb mensualités du ptz
-        var PTZ_O = document.getElementById('ptzCarence').value * 12; // offset du ptz
+        var PTZ_N = v(document.getElementById('ptzDuree').value) * 12; // nb mensualités du ptz
+        var PTZ_O = v(document.getElementById('ptzCarence').value) * 12; // offset du ptz
         var PTZ_end = PTZ_N + PTZ_O;
         var PTZ_M = euros(PTZ_C / PTZ_N); // au moins, ça c'est facile à calculer. Mensu du PTZ
 
@@ -30,10 +34,9 @@
         }
 
         if (document.getElementById('calcul_assurance').value == 1) {
-          var assurance = ((C + PTZ_C) * 0.01 * (document.getElementById('assurance').value || 0))*100/(100*12); // assurance mensuelle payée par mois
-          console.log(assurance);
+          var assurance = ((C + PTZ_C) * 0.01 * (v(document.getElementById('assurance').value) || 0))*100/(100*12); // assurance mensuelle payée par mois
         } else {
-          var assurance = parseInt(document.getElementById('assurance').value, 10) || 0;
+          var assurance = parseInt(v(document.getElementById('assurance').value), 10) || 0;
         }
 
         var mydata = [['Amortissement', 'Intérêts', 'Assurance']];
